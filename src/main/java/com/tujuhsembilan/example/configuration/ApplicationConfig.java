@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,6 +27,8 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -74,6 +77,8 @@ public class ApplicationConfig {
         .authorizeHttpRequests(req -> req
             .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/jwks.json")).permitAll()
             .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/login")).permitAll()
+            .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/sample/data-a")).hasAuthority("SCOPE_ROLE_A")
+            .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/sample/data-b")).hasAuthority("SCOPE_ROLE_B")
             .anyRequest().authenticated())
         // Authorization (DEFAULT IN MEM)
         .userDetailsService(new InMemoryUserDetailsManager(
